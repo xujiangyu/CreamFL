@@ -24,7 +24,8 @@ from src.utils.color_lib import RGBmean, RGBstdv
 
 from src.algorithms.eval_coco import COCOEvaluator
 from src.algorithms.retrieval_trainer import TrainerEngine
-from src.algorithms.vqa_trainer import VQAEngine, VQAMetaData, vqa_validation
+from src.algorithms.vqa_meta import VQAMetaData
+from src.algorithms.vqa_trainer import VQAEngine, vqa_validation
 from src.utils.config import parse_config
 from src.utils.load_datasets import prepare_coco_dataloaders, vqa2_dataloader
 from src.utils.logger import PythonLogger
@@ -118,9 +119,9 @@ class MMFL(object):
             meta = VQAMetaData()
             meta.build_or_load_categories_top()
             self.vqa_meta = meta
-            self.vqa_dataloader = vqa2_dataloader(vqa_dataset, train=True)
+            self.vqa_dataloader = vqa2_dataloader(vqa_dataset, train=True, filter_unknown=args.vqa_filter_unknown, meta=meta)
             test_dataset = datasets.load_dataset("HuggingFaceM4/VQAv2", split="validation")
-            self.vqa_test_loader = vqa2_dataloader(test_dataset)
+            self.vqa_test_loader = vqa2_dataloader(test_dataset, filter_unknown=args.vqa_filter_unknown, meta=meta)
             self.vqa_engine.create(self.config, self.vocab.word2idx, self.evaluator, self.args.mlp_local, meta)
             #print_model_tree(self.vqa_engine.fusion_model)
             if args.pretrained_model.endswith('_vqa.pt'):
