@@ -1,15 +1,11 @@
 import torch
 import sys
-sys.path.append("./")
-sys.path.append("../")
-sys.path.append("../../")
-sys.path.append("../../../")
 from src.common import prepare_args, get_config
 from src.utils.logger import PythonLogger
-import config
+from src.federation import config
 
 
-class Context():
+class Context:
     """
     Represents the context for executing a script. For sharing configuration logic between federation scripts.
 
@@ -17,6 +13,7 @@ class Context():
         description (str): A description of the script.
         script (str): The name/type of script to be executed.
     """
+
     def __init__(self, description: str, script: str):
         # from main
         args, wandb = prepare_args(description, script)
@@ -33,7 +30,6 @@ class Context():
         else:
             self.device = torch.device("cpu")
 
-
         # federation specific config file
         self.fed_config = config.load_config(args.fed_config)
 
@@ -43,13 +39,19 @@ class Context():
 
 
 def new_server_context():
-    return Context(description="CreamFL Federated Learning (http server)", script="server")
+    return Context(
+        description="CreamFL Federated Learning (http server)", script="server"
+    )
+
 
 def new_client_context():
     return Context(description="CreamFL Federated Learning (client)", script="client")
 
+
 def new_global_context():
-    c = Context(description="CreamFL Federated Learning (global compute)", script="global")
+    c = Context(
+        description="CreamFL Federated Learning (global compute)", script="global"
+    )
     c.has_img_model = True
     c.has_txt_model = True
     return c
