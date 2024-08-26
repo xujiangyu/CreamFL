@@ -147,6 +147,15 @@ def save(obj, path):
         f.write(data)
     return fn, hash
 
+def send(obj, path):
+    os.makedirs(path, exist_ok=True)
+    data = pickle.dumps(obj)
+    hash = feature_hash(data)
+    fn = f"{path}/{hash}.pkl"
+    with open(fn, "wb") as f:
+        f.write(data)
+    return fn, hash
+
 
 def load(cls, path, hash):
     fn = f"{path}/{hash}.pkl"
